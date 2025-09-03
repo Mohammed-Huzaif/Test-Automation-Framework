@@ -14,56 +14,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
-    - name: Running Test Automation Framework with Maven
-      run: mvn test -X -Dbrowser=chrome -DisLambdaTest=true -DisHeadless=false 
-      
-    - name: Upload Test Logs
-      if: always()
-      uses: actions/upload-artifact@v4.6.2
-      with:
-        name: Test Logs
-        path: logs/
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Running Test Automation Framework with Maven
+        run: mvn test -X -Dbrowser=chrome -DisLambdaTest=true -DisHeadless=false
 
-    - name: Upload Screenshots as Artifacts
-      if: always()
-      uses: actions/upload-artifact@v4.6.2
-      with:
-         name: Screenshots
-         path: screenshots/
+      - name: Upload Test Logs
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: Test Logs
+          path: logs/
 
-    - name: Upload Test Reports
-      if: always()
-      uses: actions/upload-artifact@v4.6.2
-      with:
-        name: Test Reports
-        path: report.html
+      - name: Upload Screenshots as Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: Screenshots
+          path: screenshots/
 
-    - name: Test Execution Status
-      run: echo "Test Execution Completed"
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: Test Reports
+          path: report.html
 
-    - name: Copy page to gh-pages Folder
-      if: always()
+      - name: Test Execution Status
+        run: echo "Test Execution Completed"
 
-      run:
-       mkdir -p public/extent-reports/
-       cp -R report.html public/extent-reports/
-       cp -R screenshots/ public/extent-reports/screenshots/
-       ls -l
+      - name: Copy page to gh-pages Folder
+        if: always()
 
-    - name: Deploy
-      if: always()
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: public/extent-reports/
-        token: ${{secrets.PAT123}}
-        clean: true
+        run:
+          mkdir -p public/extent-reports/
+          cp report.html public/extent-reports/
+          cp -R screenshots/ public/extent-reports/screenshots/
+          ls -l public/extent-reports/
+
+
+      - name: Deploy
+        if: always()
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: public/extent-reports/
+          token: ${{secrets.PAT123}}
+          clean: true
 
 
 
