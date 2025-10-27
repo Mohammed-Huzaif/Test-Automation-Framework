@@ -18,9 +18,9 @@ import java.util.Arrays;
 public class TestListener implements ITestListener {
     Logger logger = LoggerUtility.getLogger(this.getClass());
 
-    ExtentSparkReporter extentSparkReporter;
-    ExtentReports extentReports;
-    ExtentTest extentTest;
+//    ExtentSparkReporter extentSparkReporter;
+//    ExtentReports extentReports;
+//    ExtentTest extentTest;
 
     public void onTestStart(ITestResult result) {
         logger.info(result.getMethod().getMethodName());

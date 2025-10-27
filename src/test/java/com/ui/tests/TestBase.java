@@ -28,7 +28,7 @@ public class TestBase {
     public void setUp(
             @Optional("chrome") String browser,
             @Optional("false") boolean isLambdaTest,
-            @Optional("true") boolean isHeadless,
+            @Optional("false") boolean isHeadless,
             ITestResult result) throws FileNotFoundException {
         WebDriver lambdaDriver;
         if (isLambdaTest) {
@@ -45,12 +45,14 @@ public class TestBase {
         return homePage;
     }
 
-    @AfterMethod
-    public void tearDown() {
-
-        if (isLambdaTest){
-            LambdaTestUtility.quitSession();
-        }
-        homePage.quit();
-    }
+//    @AfterMethod
+//    public void tearDown() {
+//
+//        if (isLambdaTest){
+//            LambdaTestUtility.quitSession();
+//        } else{
+//            homePage.quit();
+//        }
+//
+//    }
 }

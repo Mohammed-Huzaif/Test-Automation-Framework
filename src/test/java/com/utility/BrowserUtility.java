@@ -7,16 +7,23 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 //Parent class is always be abstract
 public abstract class BrowserUtility {
 
     private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+    private WebDriverWait wait;
 
     public WebDriver getDriver() {
 
@@ -26,13 +33,18 @@ public abstract class BrowserUtility {
     public BrowserUtility(WebDriver driver) {
         super();
         this.driver.set(driver);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     }
+
+
 
     public BrowserUtility(String browserName) {
         if (browserName.equalsIgnoreCase("chrome")) {
             driver.set(new ChromeDriver());
+            wait = new WebDriverWait(driver.get(), Duration.ofSeconds(30L));
         } else if (browserName.equalsIgnoreCase("edge")) {
             driver.set(new EdgeDriver());
+            wait = new WebDriverWait(driver.get(), Duration.ofSeconds(30L));
         } else {
             System.err.println("Invalid Browser Name.. Please select Chrome or Edge");
         }
@@ -41,8 +53,10 @@ public abstract class BrowserUtility {
     public BrowserUtility(Browser browserName) {
         if (browserName == Browser.CHROME) {
             driver.set(new ChromeDriver());
+            wait = new WebDriverWait(driver.get(), Duration.ofSeconds(30L));
         } else if (browserName == Browser.EDGE) {
             driver.set(new EdgeDriver());
+            wait = new WebDriverWait(driver.get(), Duration.ofSeconds(30L));
         } else {
             System.err.println("Invalid Browser Name.. Please select Chrome or Edge");
         }
@@ -55,9 +69,11 @@ public abstract class BrowserUtility {
                 options.addArguments("--headless=new"); //headless
                 options.addArguments("--window-size=1920,1080");
                 driver.set(new ChromeDriver(options));
+                wait = new WebDriverWait(driver.get(), Duration.ofSeconds(30L));
             }
             else {
                 driver.set(new ChromeDriver());
+                wait = new WebDriverWait(driver.get(), Duration.ofSeconds(30L));
             }
         } else if (browserName == Browser.EDGE) {
             if(isHeadless) {
@@ -65,8 +81,10 @@ public abstract class BrowserUtility {
                 options.addArguments("--headless=new"); //headless
                 options.addArguments("--window-size=1920,1080");
                 driver.set(new EdgeDriver(options));
+                wait = new WebDriverWait(driver.get(), Duration.ofSeconds(30L));
             }else {
                 driver.set(new EdgeDriver());
+                wait = new WebDriverWait(driver.get(), Duration.ofSeconds(30L));
             }
         } else {
             System.err.println("Invalid Browser Name.. Please select Chrome or Edge");
@@ -83,17 +101,60 @@ public abstract class BrowserUtility {
     }
 
     public void clickOn(By locator) {
-        WebElement element = driver.get().findElement(locator);
+       // WebElement element = driver.get().findElement(locator);
+        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        element.click();
+    }
+
+    public void clickOn(WebElement element) {
         element.click();
     }
 
     public void enterText(By locator, String textToEnter) {
-        WebElement element = driver.get().findElement(locator);
+        //WebElement element = driver.get().findElement(locator);
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
         element.sendKeys(textToEnter);
+    }
+
+    public void clearText(By textBoxLocator) {
+        //WebElement element = driver.get().findElement(textBoxLocator);
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(textBoxLocator));
+        element.clear();
+    }
+
+    public void selectFromDropdown(By dropdownLocator, String optionToSelect ){
+        //WebElement element = driver.get().findElement(dropdownLocator);
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(dropdownLocator));
+        Select select = new Select(element);
+        select.selectByVisibleText(optionToSelect);
+    }
+
+    public void enterSpecialKey(By locator, Keys keyToEnter) {
+        //WebElement element = driver.get().findElement(locator);
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        element.sendKeys(keyToEnter);
+    }
+
+    public List<String> getAllVisibleText(By locator) {
+        List<WebElement> elementsList = driver.get().findElements(locator);
+        List<String> visibleTextList = new ArrayList<String>();
+        for(WebElement element : elementsList){
+          visibleTextList.add(getVisibleText(element));
+        }
+        return visibleTextList;
+    }
+
+    public List<WebElement> getAllElements(By locator) {
+        List<WebElement> elementsList = driver.get().findElements(locator);
+        return elementsList;
     }
 
     public String getVisibleText(By locator) {
         WebElement element = driver.get().findElement(locator);
+        return element.getText();
+    }
+
+    public String getVisibleText(WebElement element) {
         return element.getText();
     }
 
